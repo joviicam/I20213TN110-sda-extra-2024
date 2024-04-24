@@ -3,16 +3,12 @@ package com.example.i20213tn110sdaextra2024.service;
 import com.example.i20213tn110sdaextra2024.dto.UserDto;
 import com.example.i20213tn110sdaextra2024.model.User;
 import com.example.i20213tn110sdaextra2024.repository.UserRepository;
-import jakarta.validation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
-import java.util.Set;
-
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -21,9 +17,24 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User registrar(UserDto userDto) throws ParseException {
+    public User registrar(UserDto userDto) throws ParseException, IOException {
 
         User user = userDto.registrarUser();
+        if(user.getPassword()!=null && user.getPassword().length()<8){
+            throw new IOException("Longitud de la contraseña invalida");
+        }
+        if(user.getName().length()>30 || user.getSurname().length()>30){
+            throw new IOException("Longitud nombre o apellidos debe ser menor a 30");
+        }
+        if(user.getEmail().length()>50){
+            throw new IOException("Longitud del email debe ser menor a 50 caracteres");
+        }
+        Date fechaNac = user.getBirthdate();
+        Date current = new Date();
+        if(fechaNac.after(current)){
+            throw new IOException("Fecha de nacimiento mayor a la fecha actual");
+        }
+
         return userRepository.save(user);
     }
 
