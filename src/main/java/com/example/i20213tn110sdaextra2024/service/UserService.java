@@ -20,6 +20,9 @@ public class UserService {
     public User registrar(UserDto userDto) throws ParseException, IOException {
 
         User user = userDto.registrarUser();
+        if(user.getName()==null || user.getSurname()==null || user.getEmail()==null || user.getBirthdate()==null){
+            throw new IOException("Faltan campos");
+        }
         if(user.getPassword()!=null && user.getPassword().length()<8){
             throw new IOException("Longitud de la contraseña invalida");
         }
